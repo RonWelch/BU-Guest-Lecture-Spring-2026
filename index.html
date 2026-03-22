@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blockchain Fundamentals & the Emerging Digital Finance System</title>
+<style>
+  :root {
+    --bg: #060b18;
+    --sidebar-bg: #0d1526;
+    --accent: #f59e0b;
+    --accent2: #3b82f6;
+    --accent3: #10b981;
+    --accent4: #8b5cf6;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #1e2d4a;
+    --glow: rgba(245, 158, 11, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    z-index: 10;
+  }
+
+  #sidebar .logo {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 16px 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .chapter-item {
+    padding: 8px 16px;
+    font-size: 11.5px;
+    color: var(--muted);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+
+  .chapter-item:hover {
+    color: var(--text);
+    background: rgba(245,158,11,0.08);
+  }
+
+  .chapter-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(245,158,11,0.1);
+    font-weight: 600;
+  }
+
+  /* MAIN */
+  #main {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #slide-counter {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    font-size: 13px;
+    color: var(--muted);
+    z-index: 20;
+    font-variant-numeric: tabular-nums;
+    background: rgba(6,11,24,0.8);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  #slide-counter span { color: var(--accent); font-weight: 700; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* NAV ARROWS */
+  #nav-arrows {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    gap: 8px;
+    z-index: 20;
+  }
+
+  .arrow-btn {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .arrow-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ===== SLIDE LAYOUTS ===== */
+
+  /* Title Slide */
+  .slide-title {
+    flex-direction: column;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 30%, rgba(245,158,11,0.08) 0%, transparent 60%);
+  }
+
+  .title-badge {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    border: 1px solid var(--accent);
+    padding: 6px 18px;
+    border-radius: 20px;
+    display: inline-block;
+  }
+
+  .title-main {
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1.1;
+    max-width: 800px;
+    margin: 0 auto 12px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .title-sub {
+    font-size: 18px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+
+  .presenter-card {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 32px;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+  }
+
+  .presenter-name { font-size: 20px; font-weight: 700; color: var(--text); }
+  .presenter-meta { font-size: 12px; color: var(--muted); font-family: monospace; }
+  .presenter-meta span { color: var(--accent3); }
+
+  /* Bitcoin ring decoration */
+  .btc-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #d97706);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    margin: 0 auto 32px;
+    box-shadow: 0 0 60px rgba(245,158,11,0.4);
+    animation: pulse-ring 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { box-shadow: 0 0 40px rgba(245,158,11,0.3); }
+    50% { box-shadow: 0 0 80px rgba(245,158,11,0.6); }
+  }
+
+  /* Statement Slide */
+  .slide-statement {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .big-statement {
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1.05;
+    max-width: 900px;
+    text-align: center;
+  }
+
+  .big-statement .highlight { color: var(--accent); }
+  .big-statement .blue { color: var(--accent2); }
+  .big-statement .green { color: var(--accent3); }
+
+  .sub-statement {
+    font-size: 20px;
+    color: var(--muted);
+    margin-top: 20px;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  /* Number Slide */
+  .slide-number {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .mega-number {
+    font-size: 140px;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .number-label {
+    font-size: 22px;
+    color: var(--muted);
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+
+  .number-context {
+    font-size: 16px;
+    color: var(--muted);
+    margin-top: 16px;
+    max-width: 600px;
+    line-height: 1.5;
+  }
+
+  /* Three col */
+  .slide-three {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .slide-heading {
+    font-size: 36px;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .three-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  .card {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.3s;
+  }
+
+  .card:hover { border-color: var(--accent); }
+
+  .card-icon { font-size: 36px; }
+  .card-title { font-size: 18px; font-weight: 700; color: var(--text); }
+  .card-desc { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+  /* Two col */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .col-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .col-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .content-title {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .content-body {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Key insight box */
+  .insight-box {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 15px;
+    color: var(--accent);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  /* Full visual slide */
+  .slide-full {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  /* Timeline */
+  .timeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .timeline-item {
+    flex: 1;
+    text-align: center;
+    position: relative;
+  }
+
+  .timeline-item::after {
+    content: '→';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 20px;
+  }
+
+  .timeline-item:last-child::after { display: none; }
+
+  /* Brief History slide — dollar notes (row) */
+  .history-dollar-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(10px, 1.8vw, 22px);
+    width: 100%;
+    max-width: 920px;
+    margin-bottom: 4px;
+  }
+  .history-dollar-row img {
+    max-height: min(25vh, 188px);
+    width: auto;
+    max-width: calc(50% - 14px);
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .timeline-year {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent);
+  }
+
+  .timeline-text {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+
+  /* Properties list */
+  .props-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .prop-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+  }
+
+  .prop-num {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent);
+    min-width: 40px;
+  }
+
+  .prop-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .prop-sub {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* Six concepts hexagons */
+  .hex-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .hex-card {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hex-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent);
+  }
+
+  .hex-num { font-size: 32px; font-weight: 900; color: var(--accent); }
+  .hex-title { font-size: 16px; font-weight: 700; margin: 4px 0; }
+  .hex-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  /* Quote slide */
+  .slide-quote {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .big-quote {
+    font-size: 48px;
+    font-weight: 900;
+    max-width: 800px;
+    line-height: 1.1;
+    font-style: italic;
+  }
+
+  .quote-attr {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  /* Trilemma triangle */
+  .trilemma-wrap {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    flex-direction: row;
+  }
+
+  .triangle-svg {
+    width: 280px;
+    height: 260px;
+    flex-shrink: 0;
+  }
+
+  /* Stablecoin types */
+  .stablecoin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    max-width: 860px;
+    width: 100%;
+  }
+
+  .sc-card {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+
+  .sc-type { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+  .sc-name { font-size: 20px; font-weight: 800; margin: 4px 0; }
+  .sc-desc { font-size: 13px; color: var(--muted); line-height: 1.4; }
+
+  /* Flow diagram */
+  .flow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+  }
+
+  .flow-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #000;
+    font-weight: 900;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .flow-text { font-size: 14px; color: var(--text); font-weight: 500; }
+
+  .flow-arrow {
+    text-align: center;
+    color: var(--accent);
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  /* Comparison table */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 960px;
+    width: 100%;
+  }
+
+  .compare-card {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .compare-card.btc { border-top: 3px solid var(--accent); }
+  .compare-card.eth { border-top: 3px solid var(--accent4); }
+  .compare-card.xrp { border-top: 3px solid var(--accent2); }
+
+  .compare-symbol {
+    font-size: 32px;
+    font-weight: 900;
+  }
+
+  .compare-symbol.btc { color: var(--accent); }
+  .compare-symbol.eth { color: var(--accent4); }
+  .compare-symbol.xrp { color: var(--accent2); }
+
+  .compare-role { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .compare-stat { font-size: 14px; color: var(--text); }
+
+  /* Agent diagram */
+  .agent-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .agent-box {
+    flex: 1;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .agent-icon { font-size: 40px; }
+  .agent-label { font-size: 14px; font-weight: 700; margin-top: 8px; }
+  .agent-sub { font-size: 12px; color: var(--muted); }
+
+  .agent-arrow {
+    font-size: 24px;
+    color: var(--accent);
+    padding: 0 12px;
+    flex-shrink: 0;
+  }
+
+  /* Theory boxes */
+  .theory-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 880px;
+    width: 100%;
+  }
+
+  .theory-box {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    padding: 18px 24px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .theory-num {
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .theory-content {}
+  .theory-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .theory-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* Keyframe animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  .animate-float { animation: float 4s ease-in-out infinite; }
+
+  /* Don't trust slide */
+  .dont-trust {
+    font-size: 90px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1;
+    background: linear-gradient(135deg, #ef4444, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* x402 */
+  .x402-badge {
+    font-size: 100px;
+    font-weight: 900;
+    font-family: monospace;
+    color: var(--accent2);
+    text-shadow: 0 0 60px rgba(59,130,246,0.5);
+    line-height: 1;
+  }
+
+  /* Protocol winner */
+  .winner-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .winner-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .winner-label {
+    font-size: 14px;
+    font-weight: 600;
+    width: 120px;
+    text-align: right;
+    color: var(--muted);
+  }
+
+  .winner-bar {
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #000;
+    transition: width 1s ease;
+  }
+
+  /* Closing */
+  .framework-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 800px;
+    width: 100%;
+  }
+
+  .framework-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .framework-icon { font-size: 22px; flex-shrink: 0; }
+  .framework-text { font-size: 15px; color: var(--text); line-height: 1.5; }
+
+  /* Scrollbar */
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* Progress bar */
+  #progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+    z-index: 20;
+  }
+
+  /* 40% dollar visual */
+  .dollar-visual {
+    position: relative;
+    width: 240px;
+    height: 300px;
+  }
+
+  .dollar-stack {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+  }
+
+  .stack-layer {
+    height: 40px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* Animate in slide content */
+  .slide.active .card,
+  .slide.active .prop-item,
+  .slide.active .flow-step,
+  .slide.active .theory-box,
+  .slide.active .compare-card,
+  .slide.active .hex-card,
+  .slide.active .framework-item {
+    animation: slideInUp 0.4s ease both;
+  }
+
+  .slide.active .card:nth-child(1),
+  .slide.active .prop-item:nth-child(1),
+  .slide.active .flow-step:nth-child(1),
+  .slide.active .theory-box:nth-child(1),
+  .slide.active .compare-card:nth-child(1),
+  .slide.active .hex-card:nth-child(1),
+  .slide.active .framework-item:nth-child(1) { animation-delay: 0.05s; }
+
+  .slide.active .card:nth-child(2),
+  .slide.active .prop-item:nth-child(2),
+  .slide.active .flow-step:nth-child(2),
+  .slide.active .theory-box:nth-child(2),
+  .slide.active .compare-card:nth-child(2),
+  .slide.active .hex-card:nth-child(2),
+  .slide.active .framework-item:nth-child(2) { animation-delay: 0.12s; }
+
+  .slide.active .card:nth-child(3),
+  .slide.active .prop-item:nth-child(3),
+  .slide.active .flow-step:nth-child(3),
+  .slide.active .theory-box:nth-child(3),
+  .slide.active .compare-card:nth-child(3),
+  .slide.active .hex-card:nth-child(3),
+  .slide.active .framework-item:nth-child(3) { animation-delay: 0.19s; }
+
+  .slide.active .card:nth-child(4),
+  .slide.active .prop-item:nth-child(4),
+  .slide.active .flow-step:nth-child(4),
+  .slide.active .hex-card:nth-child(4),
+  .slide.active .framework-item:nth-child(4) { animation-delay: 0.26s; }
+
+  .slide.active .hex-card:nth-child(5),
+  .slide.active .flow-step:nth-child(5) { animation-delay: 0.33s; }
+  .slide.active .hex-card:nth-child(6),
+  .slide.active .flow-step:nth-child(6) { animation-delay: 0.40s; }
+
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* network visual */
+  .network-dots {
+    position: relative;
+    width: 280px;
+    height: 220px;
+  }
+
+  .ndot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 12px var(--accent2);
+  }
+
+  .ndot.center {
+    width: 24px;
+    height: 24px;
+    background: var(--accent);
+    box-shadow: 0 0 20px var(--accent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="logo">⛓ Blockchain</div>
+  <div class="chapter-item active" data-slide="0">01 Opening</div>
+  <div class="chapter-item" data-slide="3">02 The Problem: Trust</div>
+  <div class="chapter-item" data-slide="11">03 Six Concepts</div>
+  <div class="chapter-item" data-slide="19">04 Digital Finance</div>
+  <div class="chapter-item" data-slide="29">05 Blockchain + AI</div>
+  <div class="chapter-item" data-slide="33">06 Protocol Layer</div>
+  <div class="chapter-item" data-slide="38">07 Closing</div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="slide-counter"><span id="current-num">1</span> / <span id="total-num">42</span></div>
+  <div id="progress"></div>
+
+  <!-- =========================================
+       CHAPTER 1: OPENING
+  ========================================= -->
+
+  <!-- SLIDE 0: Title -->
+  <div class="slide slide-title active" data-chapter="0">
+    <div class="btc-ring animate-float">₿</div>
+    <div class="title-badge">MBA Lecture · March 2026</div>
+    <div class="title-main">Blockchain Fundamentals<br>& the Emerging Digital<br>Finance System</div>
+    <div class="title-sub">The Convergence of Blockchain, DeFi, and Agentic AI</div>
+    <div class="presenter-card">
+      <div class="presenter-name">Ron Welch</div>
+      <div class="presenter-meta"><span>Email:</span> rwelch@acm.org</div>
+      <div class="presenter-meta"><span>Nostr:</span> npub19556tdmcmeqv5c9tgge9k68f2fc0s2kmue8xwp5jf3g4kms3yrpqfcp0qv</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 1: Everything is About to Change -->
+  <div class="slide slide-statement" data-chapter="0">
+    <div class="big-statement">
+      The global financial system<br>is not being <span class="highlight">reformed</span><br>It's being <span class="highlight">replaced</span>
+    </div>
+    <div class="sub-statement">Not overnight. But progressively — and faster than incumbents expect.</div>
+  </div>
+
+  <!-- SLIDE 2: Separate Tech from Speculation -->
+  <div class="slide slide-statement" data-chapter="0">
+    <div class="section-label" style="margin-bottom:20px; font-size:13px;">First Principle</div>
+    <div class="big-statement" style="font-size:56px;">
+      Separate the <span class="blue">technology</span><br>from the <span class="highlight">speculation</span>
+    </div>
+    <div class="sub-statement">The internet survived the dot-com crash.<br>It still reshaped every industry on the planet.</div>
+    <div class="insight-box" style="margin-top:24px; font-size:20px; padding:20px 32px;">
+      Don't Trust &mdash; Verify
+    </div>
+  </div>
+
+  <!-- =========================================
+       CHAPTER 2: THE PROBLEM — TRUST
+  ========================================= -->
+
+  <!-- SLIDE 3: What Is Money? -->
+  <div class="slide slide-three" data-chapter="1">
+    <div class="slide-heading">What Is Money?</div>
+    <div class="three-grid">
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <div class="card-title">Medium of Exchange</div>
+        <div class="card-desc">Facilitates transactions between parties without barter</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📏</div>
+        <div class="card-title">Unit of Account</div>
+        <div class="card-desc">Measures relative value of goods and services</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏦</div>
+        <div class="card-title">Store of Value</div>
+        <div class="card-desc">Preserves purchasing power over time</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:800px; text-align:center;">
+      Gold, dollars, even seashells qualify — the <em>material</em> doesn't define money. The <strong>social agreement</strong> does.
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Hard Money -->
+  <div class="slide" style="flex-direction:column; gap:28px;" data-chapter="1">
+    <div class="slide-heading">What Is <span style="color:var(--accent)">Hard</span> Money?</div>
+    <div class="props-list" style="max-width:800px; width:100%;">
+      <div class="prop-item">
+        <div class="prop-num">1</div>
+        <div><div class="prop-text">Difficult to obtain &amp; produce</div><div class="prop-sub">Cannot be created at will</div></div>
+      </div>
+      <div class="prop-item">
+        <div class="prop-num">2</div>
+        <div><div class="prop-text">Holds value through time</div><div class="prop-sub">Not subject to arbitrary dilution</div></div>
+      </div>
+      <div class="prop-item">
+        <div class="prop-num">3</div>
+        <div><div class="prop-text">Limited in total supply</div><div class="prop-sub">Scarcity is enforced, not promised</div></div>
+      </div>
+      <div class="prop-item">
+        <div class="prop-num">4</div>
+        <div><div class="prop-text">Easily divisible &amp; transferable</div><div class="prop-sub">Practical for real transactions</div></div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:800px; text-align:center;">Gold scores well. Fiat currency does not.</div>
+  </div>
+
+  <!-- SLIDE 5: Brief History of Money -->
+  <div class="slide slide-full" data-chapter="1">
+    <div class="history-dollar-row">
+      <img src="Dollar1.png" alt="US dollar note, earlier design">
+      <img src="Dollar3.jpg" alt="US dollar note, recent design">
+    </div>
+    <div class="slide-heading" style="margin-bottom:8px;">A Brief History of Money</div>
+    <div class="timeline" style="margin:24px 0;">
+      <div class="timeline-item">
+        <div class="timeline-year">Gold</div>
+        <div class="timeline-text">Thousands of years<br>Hard, scarce, universal</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1863</div>
+        <div class="timeline-text">Gold Certificates<br>"Payable in gold coin"</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1944</div>
+        <div class="timeline-text">Bretton Woods Agreement<br>Dollar backed by gold</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1971</div>
+        <div class="timeline-text">Nixon ends gold standard<br>Dollar is pure Fiat</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2009</div>
+        <div class="timeline-text">Bitcoin<br>Satoshi Nakamoto</div>
+      </div>
+    </div>
+    <div class="insight-box" style="font-size:18px; padding:16px 28px;">
+      1928: "One hundred dollars in gold coin payable to the bearer on demand"<br>
+      <span style="color:var(--muted); font-size:14px; font-weight:400;">→ By 2004: No backing. No promise. Trust the government.</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: 40% — Fiat Problems -->
+  <div class="slide slide-number" data-chapter="1">
+    <div class="mega-number">40%</div>
+    <div class="number-label">of all US dollars printed since 2020</div>
+    <div class="number-context">Since 2020, roughly 40% of all US dollars in circulation were newly created.<br>No cap. No limit. No vote required.</div>
+    <div style="display:flex; gap:16px; margin-top:24px; flex-wrap:wrap; justify-content:center;">
+      <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:14px 22px;text-align:center;">
+        <div style="font-size:22px;font-weight:800;color:var(--accent2);">2008</div>
+        <div style="font-size:12px;color:var(--muted);">Bank run crisis</div>
+      </div>
+      <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:14px 22px;text-align:center;">
+        <div style="font-size:22px;font-weight:800;color:var(--accent2);">2023</div>
+        <div style="font-size:12px;color:var(--muted);">SVB collapse</div>
+      </div>
+      <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:14px 22px;text-align:center;">
+        <div style="font-size:22px;font-weight:800;color:var(--accent);">∞</div>
+        <div style="font-size:12px;color:var(--muted);">Supply cap</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Purchasing power of the dollar -->
+  <div class="slide slide-full" data-chapter="1">
+    <img src="DollarPower.png" alt="Purchasing power of the U.S. dollar from 1920 to 2020, in 2020 dollars, with milestones including the Federal Reserve Act, Bretton Woods, end of the gold standard, quantitative easing, and 2020 money-supply growth." style="max-width:min(1080px, 94vw); max-height:min(78vh, 760px); width:auto; height:auto; object-fit:contain; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,0.45);">
+  </div>
+
+  <!-- SLIDE 8: Oil prices and the gold standard -->
+  <div class="slide slide-full" data-chapter="1">
+    <img src="NoGoldOilPrices.png" alt="Oil prices 1861–2022: relatively low and stable under the gold or gold exchange standard, versus higher volatility after the gold standard era; includes WWI exception and post-1970s volatility. Source: BOE, FFTT." style="max-width:min(1080px, 94vw); max-height:min(78vh, 760px); width:auto; height:auto; object-fit:contain; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,0.45);">
+  </div>
+
+  <!-- SLIDE 9: Fractional Reserve -->
+  <div class="slide" style="flex-direction:column; gap:24px;" data-chapter="1">
+    <div class="slide-heading">Fractional Reserve Banking</div>
+    <div class="two-col" style="max-width:900px;">
+      <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+        <div style="font-size:48px;font-weight:900;color:var(--accent3);">$1,000</div>
+        <div style="font-size:14px;color:var(--muted);">You deposit</div>
+        <div style="font-size:32px;color:var(--accent);margin:4px 0;">↓</div>
+        <div style="font-size:48px;font-weight:900;color:var(--accent);">$10,000</div>
+        <div style="font-size:14px;color:var(--muted);">Circulates in the economy</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="prop-item">
+          <div class="prop-num" style="font-size:18px;min-width:30px;">10%</div>
+          <div><div class="prop-text">Bank keeps in reserve</div><div class="prop-sub">$100 stays in vault</div></div>
+        </div>
+        <div class="prop-item">
+          <div class="prop-num" style="font-size:18px;min-width:30px;">90%</div>
+          <div><div class="prop-text">Lent out immediately</div><div class="prop-sub">$900 enters economy</div></div>
+        </div>
+        <div class="prop-item">
+          <div class="prop-num" style="font-size:18px;min-width:30px;">10×</div>
+          <div><div class="prop-text">Money multiplication</div><div class="prop-sub">Cycle repeats indefinitely</div></div>
+        </div>
+        <div class="insight-box">Systemic fragility is the <strong>design</strong>, not the bug</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Counterparty Risk -->
+  <div class="slide slide-full" data-chapter="1">
+    <div class="slide-heading" style="margin-bottom:20px;">Every Layer = Counterparty Risk</div>
+    <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:900px;">
+      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:14px 20px;font-size:15px;font-weight:600;color:#f87171;">Trust Banks to hold reserves</div>
+      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:14px 20px;font-size:15px;font-weight:600;color:#f87171;">Trust Banks to stay solvent</div>
+      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:14px 20px;font-size:15px;font-weight:600;color:#f87171;">Trust processors not to freeze accounts</div>
+      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:14px 20px;font-size:15px;font-weight:600;color:#f87171;">Trust intermediaries on fees</div>
+      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:14px 20px;font-size:15px;font-weight:600;color:#f87171;">Trust governments not to print</div>
+    </div>
+    <div class="dont-trust" style="margin-top:32px; font-size:72px;">Don't Trust — Verify</div>
+    <div style="font-size:16px;color:var(--muted);margin-top:8px;">The cypherpunk principle that Satoshi built into every line of Bitcoin</div>
+  </div>
+
+  <!-- =========================================
+       CHAPTER 3: SIX CONCEPTS
+  ========================================= -->
+
+  <!-- SLIDE 11: Double Spending Problem -->
+  <div class="slide" style="flex-direction:column; gap:24px; text-align:center;" data-chapter="2">
+    <div class="section-label">The Core Problem</div>
+    <div class="big-statement" style="font-size:60px;">The Double Spending<br><span class="highlight">Problem</span></div>
+    <div class="sub-statement">Digital files copy perfectly at zero cost.<br>If I send you a digital coin, I still have it.<br><br>Every prior attempt at digital money failed here.</div>
+    <div class="insight-box" style="max-width:700px;">
+      Bitcoin solved this <strong>for the first time</strong> without any trusted third party
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Six Concepts Overview -->
+  <div class="slide slide-full" data-chapter="2">
+    <div class="slide-heading" style="margin-bottom:20px;">Six Concepts That Change Everything</div>
+    <div class="hex-grid">
+      <div class="hex-card">
+        <div class="hex-num">1</div>
+        <div class="hex-title">Double Spending</div>
+        <div class="hex-desc">The problem to solve</div>
+      </div>
+      <div class="hex-card">
+        <div class="hex-num">2</div>
+        <div class="hex-title">Public Ledger</div>
+        <div class="hex-desc">Every transaction, forever</div>
+      </div>
+      <div class="hex-card">
+        <div class="hex-num">3</div>
+        <div class="hex-title">Consensus</div>
+        <div class="hex-desc">Proof of Work / Stake</div>
+      </div>
+      <div class="hex-card">
+        <div class="hex-num">4</div>
+        <div class="hex-title">Decentralization</div>
+        <div class="hex-desc">No single point of failure</div>
+      </div>
+      <div class="hex-card">
+        <div class="hex-num">5</div>
+        <div class="hex-title">Scarcity</div>
+        <div class="hex-desc">21 million. Mathematically enforced.</div>
+      </div>
+      <div class="hex-card">
+        <div class="hex-num">6</div>
+        <div class="hex-title">Cryptographic Signatures</div>
+        <div class="hex-desc">Your key = your coins</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: Public Ledger -->
+  <div class="slide" style="flex-direction:column; gap:24px;" data-chapter="2">
+    <div class="two-col" style="max-width:1000px;">
+      <div class="col-content">
+        <div class="section-label">Concept 2</div>
+        <div class="content-title">The Public<br>Ledger</div>
+        <div class="content-body">Every Bitcoin transaction ever made is visible to anyone on Earth.</div>
+        <div style="font-size:15px;color:var(--muted);margin-top:4px;">Explore the live chain: <a href="https://mempool.space" target="_blank" rel="noopener noreferrer" style="color:var(--accent2);font-weight:700;text-decoration:none;border-bottom:1px solid rgba(59,130,246,0.45);">mempool.space</a></div>
+        <div class="props-list">
+          <div class="prop-item" style="padding:10px 16px;">
+            <div class="prop-num" style="font-size:18px;">~10</div>
+            <div><div class="prop-text">Minutes per block</div></div>
+          </div>
+          <div class="prop-item" style="padding:10px 16px;">
+            <div class="prop-num" style="font-size:18px;">∞</div>
+            <div><div class="prop-text">Cannot be altered</div><div class="prop-sub">Rewriting requires >50% of global hash power</div></div>
+          </div>
+        </div>
+        <div class="insight-box">Immutability eliminates the trusted record-keeper</div>
+      </div>
+      <div class="col-visual">
+        <svg width="442" height="341" viewBox="0 0 260 200" fill="none">
+          <!-- Block chain visual -->
+          <rect x="10" y="70" width="70" height="60" rx="8" fill="#1e2d4a" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="45" y="100" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="700">Block</text>
+          <text x="45" y="115" text-anchor="middle" fill="#94a3b8" font-size="8">#889,420</text>
+          <line x1="80" y1="100" x2="100" y2="100" stroke="#f59e0b" stroke-width="2" marker-end="url(#arr)"/>
+          <rect x="100" y="70" width="70" height="60" rx="8" fill="#1e2d4a" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="135" y="100" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="700">Block</text>
+          <text x="135" y="115" text-anchor="middle" fill="#94a3b8" font-size="8">#889,421</text>
+          <line x1="170" y1="100" x2="190" y2="100" stroke="#f59e0b" stroke-width="2"/>
+          <rect x="190" y="70" width="70" height="60" rx="8" fill="#1e2d4a" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4"/>
+          <text x="225" y="97" text-anchor="middle" fill="#3b82f6" font-size="9">Next</text>
+          <text x="225" y="110" text-anchor="middle" fill="#3b82f6" font-size="9">~9 min</text>
+          <text x="135" y="30" text-anchor="middle" fill="#f1f5f9" font-size="11">Immutable Chain</text>
+          <text x="135" y="170" text-anchor="middle" fill="#94a3b8" font-size="10">Every node has a full copy</text>
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#f59e0b"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 14: Proof of Work -->
+  <div class="slide" style="flex-direction:column; gap:24px; text-align:center;" data-chapter="2">
+    <div class="section-label">Concept 3</div>
+    <div class="content-title" style="font-size:52px;">Proof of Work</div>
+    <div class="sub-statement">Miners expend real electricity competing to solve a cryptographic puzzle.<br>The winner appends the next block and earns newly created bitcoin.</div>
+    <div style="display:flex;gap:24px;justify-content:center;margin-top:16px;">
+      <div style="text-align:center;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:20px 28px;">
+        <div style="font-size:48px;font-weight:900;color:var(--accent);">3.125</div>
+        <div style="font-size:13px;color:var(--muted);">BTC block reward<br>(post-April 2024 halving)</div>
+      </div>
+      <div style="text-align:center;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:20px 28px;">
+        <div style="font-size:48px;font-weight:900;color:var(--accent2);">~4yr</div>
+        <div style="font-size:13px;color:var(--muted);">Halving cycle<br>until ~2140</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:700px; margin-top:8px;">
+      Bitcoin cannot be copy-pasted into existence — the physical world anchors the digital asset
+    </div>
+  </div>
+
+  <!-- SLIDE 15: Decentralization -->
+  <div class="slide" style="flex-direction:column; gap:20px;" data-chapter="2">
+    <div class="two-col" style="max-width:1000px;">
+      <div class="col-visual">
+        <!-- Network diagram SVG -->
+        <svg width="280" height="240" viewBox="0 0 280 240">
+          <!-- Nodes -->
+          <circle cx="140" cy="120" r="18" fill="#f59e0b" opacity="0.9"/>
+          <text x="140" y="125" text-anchor="middle" fill="#000" font-size="10" font-weight="900">₿</text>
+
+          <circle cx="60" cy="60" r="11" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="220" cy="60" r="11" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="50" cy="170" r="11" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="230" cy="170" r="11" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="140" cy="30" r="11" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="140" cy="210" r="11" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="35" cy="115" r="9" fill="#1e3a5f" stroke="#10b981" stroke-width="1.5"/>
+          <circle cx="245" cy="115" r="9" fill="#1e3a5f" stroke="#10b981" stroke-width="1.5"/>
+
+          <!-- Lines -->
+          <line x1="140" y1="102" x2="60" y2="71" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+          <line x1="140" y1="102" x2="220" y2="71" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+          <line x1="140" y1="138" x2="50" y2="159" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+          <line x1="140" y1="138" x2="230" y2="159" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+          <line x1="122" y1="120" x2="35" y2="120" stroke="#10b981" stroke-width="1" opacity="0.5"/>
+          <line x1="158" y1="120" x2="245" y2="120" stroke="#10b981" stroke-width="1" opacity="0.5"/>
+          <line x1="140" y1="102" x2="140" y2="41" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+          <line x1="140" y1="138" x2="140" y2="199" stroke="#3b82f6" stroke-width="1" opacity="0.5"/>
+        </svg>
+        <div style="font-size:13px;color:var(--muted);text-align:center;">10,000s of independent nodes worldwide</div>
+      </div>
+      <div class="col-content">
+        <div class="section-label">Concept 4</div>
+        <div class="content-title">Decentralization</div>
+        <div class="content-body">No single entity controls Bitcoin. No CEO. No headquarters. No off switch.</div>
+        <div class="insight-box">Satoshi Nakamoto deliberately disappeared after launch — leaving a system with <strong>no leader and no one to coerce</strong></div>
+        <div style="font-size:15px;color:var(--text);margin-top:8px;">No single point of failure — <em>this is the entire design philosophy</em></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 16: Scarcity — 21 Million -->
+  <div class="slide slide-number" data-chapter="2">
+    <div class="section-label" style="margin-bottom:12px;">Concept 5</div>
+    <div class="mega-number" style="font-size:120px;">21,000,000</div>
+    <div class="number-label">Total Bitcoin that will ever exist. Period.</div>
+    <div style="display:flex;gap:20px;margin-top:28px;justify-content:center;">
+      <div style="text-align:center;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:16px 24px;">
+        <div style="font-size:28px;font-weight:900;color:var(--accent3);">100M</div>
+        <div style="font-size:13px;color:var(--muted);">Satoshis per Bitcoin</div>
+      </div>
+      <div style="text-align:center;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:16px 24px;">
+        <div style="font-size:28px;font-weight:900;color:var(--accent);">2.1Q</div>
+        <div style="font-size:13px;color:var(--muted);">Quadrillion units total</div>
+      </div>
+      <div style="text-align:center;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:16px 24px;">
+        <div style="font-size:28px;font-weight:900;color:var(--accent2);">2140</div>
+        <div style="font-size:13px;color:var(--muted);">Last Bitcoin mined</div>
+      </div>
+    </div>
+    <div class="insight-box" style="margin-top:20px; max-width:700px;">
+      The supply cap is impossible to change — nobody votes to dilute their own money
+    </div>
+  </div>
+
+  <!-- SLIDE 17: Cryptographic Keys -->
+  <div class="slide" style="flex-direction:column; gap:24px; text-align:center;" data-chapter="2">
+    <div class="section-label">Concept 6</div>
+    <div class="content-title" style="font-size:52px;">Your Keys.<br>Your Coins.</div>
+    <div class="sub-statement" style="max-width:650px;">You hold a private key — typically a 12 or 24-word seed phrase. Whoever holds the key controls the coins.</div>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
+      <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:12px;padding:16px 24px;text-align:center;">
+        <div style="font-size:24px;font-weight:800;color:var(--accent3);">Not Custodied</div>
+        <div style="font-size:13px;color:var(--muted);">Cannot be frozen or seized</div>
+      </div>
+      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:16px 24px;text-align:center;">
+        <div style="font-size:24px;font-weight:800;color:#f87171;">Bank Deposit</div>
+        <div style="font-size:13px;color:var(--muted);">Legally a loan to your bank</div>
+      </div>
+    </div>
+    <div style="font-family:monospace;font-size:13px;color:var(--accent);background:var(--sidebar-bg);border:1px solid var(--border);border-radius:8px;padding:12px 20px;max-width:700px;">
+      abandon ability able about above absent absorb abstract absurd abuse access accident...
+    </div>
+  </div>
+
+  <!-- SLIDE 18: Six Concepts Together -->
+  <div class="slide slide-full" data-chapter="2">
+    <div class="slide-heading" style="margin-bottom:16px;">When Combined: Cheating is Impossible</div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:820px;width:100%;">
+      <div style="display:flex;align-items:center;gap:16px;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:12px 20px;">
+        <div style="font-size:20px;">🔐</div>
+        <div style="font-size:15px;font-weight:600;">Digital signatures prove ownership without any authority</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:12px 20px;">
+        <div style="font-size:20px;">📒</div>
+        <div style="font-size:15px;font-weight:600;">Public ledger records every transaction permanently</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:12px 20px;">
+        <div style="font-size:20px;">🌐</div>
+        <div style="font-size:15px;font-weight:600;">Decentralized nodes verify all rules — no exceptions</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:12px 20px;">
+        <div style="font-size:20px;">⚡</div>
+        <div style="font-size:15px;font-weight:600;">Proof of Work makes falsifying transactions prohibitively expensive</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:12px 20px;">
+        <div style="font-size:20px;">💎</div>
+        <div style="font-size:15px;font-weight:600;">Scarcity prevents dilution</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:820px;margin-top:8px;font-size:17px;">
+      Digital money harder than gold · More portable than cash · More transparent than any bank
+    </div>
+  </div>
+
+  <!-- =========================================
+       CHAPTER 4: BEYOND BITCOIN
+  ========================================= -->
+
+  <!-- SLIDE 19: Blockchain Trilemma -->
+  <div class="slide" style="flex-direction:column; gap:24px;" data-chapter="3">
+    <div class="slide-heading" style="text-align:center;">The Blockchain Trilemma</div>
+    <div class="trilemma-wrap">
+      <svg class="triangle-svg" viewBox="0 0 280 260" fill="none">
+        <polygon points="140,20 20,240 260,240" fill="rgba(245,158,11,0.05)" stroke="#f59e0b" stroke-width="2"/>
+        <!-- Vertex labels -->
+        <text x="140" y="14" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="800">SECURITY</text>
+        <text x="10" y="255" text-anchor="start" fill="#3b82f6" font-size="13" font-weight="800">DECENTRALIZATION</text>
+        <text x="270" y="255" text-anchor="end" fill="#10b981" font-size="13" font-weight="800">SCALABILITY</text>
+        <!-- Bitcoin position -->
+        <circle cx="100" cy="185" r="10" fill="#f59e0b"/>
+        <text x="100" y="175" text-anchor="middle" fill="#f59e0b" font-size="9">BTC</text>
+        <!-- ETH position -->
+        <circle cx="140" cy="155" r="10" fill="#8b5cf6"/>
+        <text x="155" y="155" text-anchor="start" fill="#8b5cf6" font-size="9">ETH</text>
+        <!-- XRP position -->
+        <circle cx="185" cy="200" r="10" fill="#3b82f6"/>
+        <text x="200" y="202" text-anchor="start" fill="#3b82f6" font-size="9">XRP</text>
+      </svg>
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:480px;">
+        <div class="section-label">The Bitcoin Scaling Question</div>
+        <div style="font-size:17px;color:var(--muted);line-height:1.6;">Any blockchain can optimize for at most <strong style="color:var(--text);">two of three</strong> properties. Bitcoin chose security + decentralization.</div>
+        <div class="insight-box">Bitcoin is the global settlement layer — not a Visa competitor</div>
+        <div style="font-size:15px;color:var(--muted);">Layer 2 (Lightning, Rollups) handles speed above the base layer — just as HTTP runs above TCP/IP.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 20: Triffin's Dilemma -->
+  <div class="slide" style="flex-direction:column; gap:24px; text-align:center;" data-chapter="3">
+    <div class="section-label">The Global Reserve Currency Problem</div>
+    <div class="content-title" style="font-size:52px;">Triffin's Dilemma</div>
+    <div style="display:flex;gap:20px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+      <div style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:12px;padding:20px 28px;max-width:360px;">
+        <div style="font-size:18px;font-weight:800;color:var(--accent2);margin-bottom:8px;">To supply global liquidity...</div>
+        <div style="font-size:14px;color:var(--muted);">The US must run persistent trade deficits — sending dollars abroad</div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:40px;color:var(--accent);">↔</div>
+      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:20px 28px;max-width:360px;">
+        <div style="font-size:18px;font-weight:800;color:#f87171;margin-bottom:8px;">To maintain currency credibility...</div>
+        <div style="font-size:14px;color:var(--muted);">Persistent deficits undermine confidence in the dollar's long-term value</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:750px;margin-top:8px;font-size:17px;">
+      The question is not <em>whether</em> this system changes — it's <strong>what replaces it</strong>
+    </div>
+  </div>
+
+  <!-- SLIDE 21: Stablecoins -->
+  <div class="slide slide-full" data-chapter="3">
+    <div class="slide-heading" style="margin-bottom:8px;">Stablecoins: The Bridge</div>
+    <div class="stablecoin-grid">
+      <div class="sc-card">
+        <div class="sc-type">Fiat-Backed</div>
+        <div class="sc-name">USDC · Tether</div>
+        <div class="sc-desc">Dollar held in T-bills 1:1. Programmable, 24/7, borderless. Tether was top-10 US Treasury buyer in 2024.</div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-type">Crypto-Collateralized</div>
+        <div class="sc-name">DAI</div>
+        <div class="sc-desc">Backed by over-collateralized crypto. Genuinely decentralized — no government can seize reserves held in code.</div>
+      </div>
+      <div class="sc-card" style="border-color: rgba(239,68,68,0.4);">
+        <div class="sc-type" style="color:#f87171;">Algorithmic ⚠️</div>
+        <div class="sc-name" style="color:#f87171;">TerraUSD (RIP)</div>
+        <div class="sc-desc">$19B → near-zero in 72 hours. May 2022. Circular backing is not a reserve. Lesson learned.</div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-type" style="color:var(--accent3);">Yield-Bearing</div>
+        <div class="sc-name">USDM · USDe</div>
+        <div class="sc-desc">Dollar peg + T-bill or DeFi yields auto-distributed. Anyone with internet can earn US Treasury yields.</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:860px; margin-top:8px;">
+      In Turkey, Argentina, Nigeria — USDT functions as censorship-resistant dollar store. Monetary competition at the individual level.
+    </div>
+  </div>
+
+  <!-- SLIDE 22: Smart Contracts -->
+  <div class="slide" style="flex-direction:column; gap:24px;" data-chapter="3">
+    <div class="two-col" style="max-width:1000px;">
+      <div class="col-content">
+        <div class="section-label">Programmable Finance</div>
+        <div class="content-title">Smart Contracts</div>
+        <div class="content-body">A self-executing agreement encoded directly on a blockchain. When conditions are met — execution is automatic, irreversible, and requires no third party.</div>
+        <div class="insight-box" style="font-size:14px;">
+          Brazil exporter + German importer: When IoT sensors confirm Hamburg delivery → 50,000 USDC transfers automatically. No banks. No SWIFT. No middlemen.
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-size:14px;">🏭 Trade finance settlement</div>
+        <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-size:14px;">🏠 Real estate transfers</div>
+        <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-size:14px;">💊 Insurance policy execution</div>
+        <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-size:14px;">🎵 Royalty distribution (IP)</div>
+        <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-size:14px;">🏦 Decentralized lending (DeFi)</div>
+        <div class="insight-box" style="font-size:14px;">The contract executes because <strong>the code executes</strong> — not because someone's word can be trusted</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 23: Tokenization — $16T -->
+  <div class="slide slide-number" data-chapter="3">
+    <div class="section-label" style="margin-bottom:12px;">The Next Frontier</div>
+    <div class="mega-number">$16T</div>
+    <div class="number-label">Estimated tokenizable asset base by 2030 — McKinsey</div>
+    <div class="number-context">BlackRock CEO: "Tokenization is the next generation for markets."<br>BlackRock's BUIDL tokenized money market fund attracted $500M+ in weeks.</div>
+    <div style="display:flex;gap:14px;margin-top:24px;justify-content:center;flex-wrap:wrap;">
+      <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:12px 18px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:var(--accent);">$320T</div>
+        <div style="font-size:12px;color:var(--muted);">Real Estate</div>
+      </div>
+      <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:12px 18px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:var(--accent2);">$133T</div>
+        <div style="font-size:12px;color:var(--muted);">Fixed Income</div>
+      </div>
+      <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:12px 18px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:var(--accent3);">PE Funds</div>
+        <div style="font-size:12px;color:var(--muted);">10yr lockups → tradable</div>
+      </div>
+      <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:10px;padding:12px 18px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:var(--accent4);">IP & IP</div>
+        <div style="font-size:12px;color:var(--muted);">Patents, royalties</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 24: Real Estate Tokenization -->
+  <div class="slide" style="flex-direction:column; gap:24px; text-align:center;" data-chapter="3">
+    <div class="slide-heading">Real Estate Tokenization</div>
+    <div style="display:flex;gap:32px;justify-content:center;align-items:center;margin-top:8px;">
+      <div style="text-align:center;">
+        <div style="font-size:80px;font-weight:900;color:var(--accent);">$320T</div>
+        <div style="font-size:16px;color:var(--muted);">Global real estate</div>
+      </div>
+      <div style="font-size:48px;color:var(--accent);">→</div>
+      <div style="text-align:center;">
+        <div style="font-size:80px;font-weight:900;color:var(--accent3);">$1,000</div>
+        <div style="font-size:16px;color:var(--muted);">Fractional ownership threshold</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;max-width:900px;">
+      <div class="card" style="flex:1;min-width:200px;">
+        <div class="card-icon">🏢</div>
+        <div class="card-title">$10M property</div>
+        <div class="card-desc">→ 10 million $1 tokens. No attorneys. No brokers. No $250K minimums.</div>
+      </div>
+      <div class="card" style="flex:1;min-width:200px;">
+        <div class="card-icon">💰</div>
+        <div class="card-title">Rental yield</div>
+        <div class="card-desc">Distributes automatically via smart contract to all token holders</div>
+      </div>
+      <div class="card" style="flex:1;min-width:200px;">
+        <div class="card-icon">📈</div>
+        <div class="card-title">24/7 liquidity</div>
+        <div class="card-desc">Secondary markets provide continuous price discovery — no 7-10yr lockups</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:800px;">1% of $320T real estate migrating on-chain = <strong>$3.2 trillion</strong></div>
+  </div>
+
+  <!-- SLIDE 25: DeFi -->
+  <div class="slide" style="flex-direction:column; gap:20px;" data-chapter="3">
+    <div class="slide-heading" style="text-align:center;">DeFi: Finance Without Intermediaries</div>
+    <div class="three-grid" style="max-width:960px;">
+      <div class="card">
+        <div class="card-icon">🦄</div>
+        <div class="card-title">Uniswap</div>
+        <div class="card-desc">$2T+ cumulative trading volume. Replaces exchange order books with algorithmic liquidity pools.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏦</div>
+        <div class="card-title">Aave / Compound</div>
+        <div class="card-desc">Collateralized lending at algorithmically set rates. No credit check. No business hours.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏭</div>
+        <div class="card-title">MakerDAO</div>
+        <div class="card-desc">An entire bank function — accepting collateral, issuing credit — in smart contracts.</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:960px;font-size:15px;">
+      A tokenized T-bill → deposited in Aave → generates USDC → deployed in yield strategy → returns flow automatically to depositor. No intermediaries. All in code.
+    </div>
+  </div>
+
+  <!-- SLIDE 26: Three Structural Constraints -->
+  <div class="slide" style="flex-direction:column; gap:20px; text-align:center;" data-chapter="3">
+    <div class="slide-heading">What Tokenization Dismantles</div>
+    <div class="three-grid" style="max-width:960px; margin-top:8px;">
+      <div class="card" style="border-top: 3px solid #ef4444;">
+        <div style="font-size:36px;">🔀</div>
+        <div class="card-title" style="color:#f87171;">Fragmentation</div>
+        <div class="card-desc">Equities, bonds, RE, commodities on separate systems. One wallet holds all tokenized assets on a unified interface.</div>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--accent);">
+        <div style="font-size:36px;">🔒</div>
+        <div class="card-title" style="color:var(--accent);">Illiquidity</div>
+        <div class="card-desc">PE and RE are illiquid not from genuine risk — but absent secondary market infrastructure. Tokenization builds it.</div>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--accent3);">
+        <div style="font-size:36px;">🚧</div>
+        <div class="card-title" style="color:var(--accent3);">Access Barriers</div>
+        <div class="card-desc">Minimums, accreditation, geography — all unenforceable on a public blockchain. $100 into PE is now possible.</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:960px; font-size:17px;">
+      The 30-year view: every market moving from physical → digital became faster, cheaper, higher-volume
+    </div>
+  </div>
+
+  <!-- SLIDE 28: XRP / Institutional Settlement -->
+  <div class="slide" style="flex-direction:column; gap:20px;" data-chapter="3">
+    <div class="slide-heading" style="text-align:center;">XRP: Institutional Bridge Currency</div>
+    <div class="two-col" style="max-width:1000px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="insight-box" style="font-size:15px;">
+          Target: $27 trillion in idle nostro/vostro liquidity. 3-7% cost on $5T in daily cross-border flows.
+        </div>
+        <div class="flow-steps">
+          <div class="flow-step"><div class="flow-num">1</div><div class="flow-text">US sender deposits USD at Ripple exchange</div></div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step"><div class="flow-num">2</div><div class="flow-text">Exchange buys XRP</div></div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step"><div class="flow-num">3</div><div class="flow-text">XRP transmits to Mexican exchange in <strong>3-5 seconds</strong></div></div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step"><div class="flow-num">4</div><div class="flow-text">Exchange sells XRP for MXN → deposited to recipient</div></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:16px 20px;">
+          <div style="font-size:32px;font-weight:900;color:var(--accent2);margin-bottom:4px;">3-5 sec</div>
+          <div style="font-size:13px;color:var(--muted);">Deterministic finality (vs Bitcoin's probabilistic)</div>
+        </div>
+        <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:16px 20px;">
+          <div style="font-size:32px;font-weight:900;color:var(--accent3);margin-bottom:4px;">~1,500 TPS</div>
+          <div style="font-size:13px;color:var(--muted);">Baseline throughput</div>
+        </div>
+        <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:16px 20px;">
+          <div style="font-size:32px;font-weight:900;color:var(--accent);margin-bottom:4px;">¢0.001</div>
+          <div style="font-size:13px;color:var(--muted);">Per transaction fee (burned)</div>
+        </div>
+        <div class="insight-box" style="font-size:13px;">SEC v. Ripple 2023: Same asset — different regulatory classification based on <em>how</em> it is sold, not <em>what</em> it is.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 29: BTC vs ETH vs XRP -->
+  <div class="slide slide-full" data-chapter="3">
+    <div class="slide-heading" style="margin-bottom:20px;">The Complementary Stack</div>
+    <div class="compare-grid">
+      <div class="compare-card btc">
+        <div class="compare-symbol btc">₿ Bitcoin</div>
+        <div class="compare-role">Monetary Reserve Layer</div>
+        <div class="compare-stat">Maximum security + decentralization</div>
+        <div class="compare-stat">Fixed 21M supply. No issuer.</div>
+        <div class="compare-stat" style="color:var(--accent);">Best for: Store of value, censorship-resistant transfers</div>
+      </div>
+      <div class="compare-card eth">
+        <div class="compare-symbol eth">Ξ Ethereum</div>
+        <div class="compare-role">Programmable Settlement Layer</div>
+        <div class="compare-stat">General-purpose smart contracts</div>
+        <div class="compare-stat">DeFi, stablecoins, tokenized assets</div>
+        <div class="compare-stat" style="color:var(--accent4);">Best for: Complex programmable finance</div>
+      </div>
+      <div class="compare-card xrp">
+        <div class="compare-symbol xrp">◈ XRP</div>
+        <div class="compare-role">Institutional Bridge Layer</div>
+        <div class="compare-stat">Designed for correspondent banking</div>
+        <div class="compare-stat">CBDC pilots, regulated settlement</div>
+        <div class="compare-stat" style="color:var(--accent2);">Best for: Cross-border institutional settlement</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:960px;margin-top:16px;font-size:15px;">
+      No single architecture provides all properties — the future is <strong>multi-chain</strong>, as the internet is multi-protocol
+    </div>
+  </div>
+
+  <!-- =========================================
+       CHAPTER 5: BLOCKCHAIN + AI
+  ========================================= -->
+
+  <!-- SLIDE 30: Two Technologies Converging -->
+  <div class="slide slide-statement" data-chapter="4">
+    <div class="big-statement" style="font-size:52px;">
+      <span class="highlight">Blockchain</span><br>meets<br><span class="blue">Generative AI</span>
+    </div>
+    <div class="sub-statement">Each is transformative in isolation.<br>Their convergence creates markets that cannot exist without <em>both</em>.</div>
+    <div style="display:flex;gap:16px;margin-top:24px;">
+      <div style="padding:12px 20px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;font-size:14px;font-weight:600;color:var(--accent);">Trustless programmable infrastructure</div>
+      <div style="font-size:24px;color:var(--muted);display:flex;align-items:center;">+</div>
+      <div style="padding:12px 20px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:10px;font-size:14px;font-weight:600;color:var(--accent2);">Complex reasoning and autonomous action at scale</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 31: Agents vs Bots -->
+  <div class="slide" style="flex-direction:column; gap:28px;" data-chapter="4">
+    <div class="slide-heading">Autonomous Agents ≠ Bots</div>
+    <div style="display:flex;gap:24px;max-width:900px;width:100%;">
+      <div style="flex:1;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:14px;padding:24px;">
+        <div style="font-size:32px;margin-bottom:8px;">🤖</div>
+        <div style="font-size:22px;font-weight:800;color:#f87171;margin-bottom:8px;">Bot</div>
+        <div style="font-size:15px;color:var(--muted);line-height:1.6;">Follows a predefined script. Assembly line worker with precise instructions.</div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:32px;color:var(--accent);">→</div>
+      <div style="flex:1;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);border-radius:14px;padding:24px;">
+        <div style="font-size:32px;margin-bottom:8px;">🧠</div>
+        <div style="font-size:22px;font-weight:800;color:var(--accent3);margin-bottom:8px;">Agent</div>
+        <div style="font-size:15px;color:var(--muted);line-height:1.6;">Given a <em>goal</em>. Autonomously determines the sequence of actions to achieve it. Junior associate: "Close this deal by Friday."</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:900px; font-size:16px;">
+      An agent can read market conditions, assess counterparty risk, identify optimal terms, sign smart contracts with the owner's cryptographic credentials — without human intervention at each step
+    </div>
+  </div>
+
+  <!-- SLIDE 32: Agent Identity = Private Key -->
+  <div class="slide" style="flex-direction:column; gap:24px; text-align:center;" data-chapter="4">
+    <div class="section-label">The Identity Problem: Solved</div>
+    <div class="content-title" style="font-size:52px;">How do you trust<br>the agent on the<br>other side?</div>
+    <div style="font-size:56px;margin:12px 0;">🔑</div>
+    <div class="insight-box" style="max-width:700px;font-size:18px;">
+      The agent signs the transaction with the principal's <strong>private key</strong>.<br>Cryptographic authorization is mathematically verifiable and unforgeable.
+    </div>
+    <div style="font-size:15px;color:var(--muted);max-width:700px;">Every agent action is permanently recorded on-chain. Smart contracts execute only when the authorizing signature matches a specific key.</div>
+  </div>
+
+  <!-- SLIDE 33: The Competitive Window -->
+  <div class="slide" style="flex-direction:column; gap:20px; text-align:center;" data-chapter="4">
+    <div class="slide-heading">The Window Is Open</div>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+      <div class="card" style="min-width:180px;max-width:220px;text-align:left;">
+        <div style="font-size:28px;">🏛️</div>
+        <div class="card-title">Nation-State Adoption</div>
+        <div class="card-desc">Bitcoin on sovereign wealth fund balance sheets</div>
+      </div>
+      <div class="card" style="min-width:180px;max-width:220px;text-align:left;">
+        <div style="font-size:28px;">💵</div>
+        <div class="card-title">Stablecoins: Trillions</div>
+        <div class="card-desc">Processing trillions in annual volume</div>
+      </div>
+      <div class="card" style="min-width:180px;max-width:220px;text-align:left;">
+        <div style="font-size:28px;">📊</div>
+        <div class="card-title">ETF Approved</div>
+        <div class="card-desc">Bitcoin ETFs SEC-approved. BlackRock tokenized fund live.</div>
+      </div>
+    </div>
+    <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:14px;padding:24px 32px;max-width:860px;margin-top:8px;">
+      <div style="display:flex;gap:24px;align-items:center;justify-content:center;flex-wrap:wrap;">
+        <div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--accent);">1995</div><div style="font-size:13px;color:var(--muted);">TCP/IP</div><div style="font-size:12px;color:var(--muted);">→ Amazon, Google</div></div>
+        <div style="font-size:24px;color:var(--border);">·</div>
+        <div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--accent2);">2007</div><div style="font-size:13px;color:var(--muted);">Mobile</div><div style="font-size:12px;color:var(--muted);">→ Uber, Airbnb, Stripe</div></div>
+        <div style="font-size:24px;color:var(--border);">·</div>
+        <div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--accent3);">NOW</div><div style="font-size:13px;color:var(--muted);">Blockchain + AI</div><div style="font-size:12px;color:var(--muted);">→ ???</div></div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:860px;font-size:17px;">The window for foundational positioning is open. It will not remain open indefinitely.</div>
+  </div>
+
+  <!-- =========================================
+       CHAPTER 6: PROTOCOL LAYER
+  ========================================= -->
+
+  <!-- SLIDE 27: x402 Protocol -->
+  <div class="slide" style="flex-direction:column; gap:20px; text-align:center;" data-chapter="3">
+    <div class="section-label" style="font-size:13px;">March 18, 2026 — 3 Days Ago</div>
+    <div class="x402-badge">x402</div>
+    <div style="font-size:24px;font-weight:700;margin-top:4px;">HTTP Status Code 402: Payment Required</div>
+    <div style="font-size:16px;color:var(--muted);max-width:700px;">Reserved since 1991. Unused for 35 years. Tempo Labs + Coinbase just gave it full semantics.</div>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+      <div class="card" style="min-width:180px; max-width:220px;">
+        <div style="font-size:28px;">🤖</div>
+        <div class="card-title">AI Agents Pay</div>
+        <div class="card-desc">Autonomous payment for any HTTP-accessible resource. No human checkpoint.</div>
+      </div>
+      <div class="card" style="min-width:180px; max-width:220px;">
+        <div style="font-size:28px;">💱</div>
+        <div class="card-title">Method Agnostic</div>
+        <div class="card-desc">Stablecoins, Lightning, card charges — any payment network registers a method ID.</div>
+      </div>
+      <div class="card" style="min-width:180px; max-width:220px;">
+        <div style="font-size:28px;">🆓</div>
+        <div class="card-title">Open Standard</div>
+        <div class="card-desc">Royalty-free. Being built into Coinbase SDKs now. Define the interface, not the implementation.</div>
+      </div>
+    </div>
+  </div>
+
+  <!--
+  <div class="slide" style="flex-direction:column; gap:20px; text-align:center;" data-chapter="5">
+    <div class="section-label">Internet Engineering Task Force · March 18, 2026</div>
+    <div style="font-size:88px;font-weight:900;font-family:monospace;line-height:1;">
+      <span style="color:var(--muted);">HTTP</span> <span style="color:var(--accent2);">402</span>
+    </div>
+    <div style="font-size:24px;font-weight:700;color:var(--text);">Payment Required</div>
+    <div style="font-size:15px;color:var(--muted);max-width:680px;line-height:1.6;">Reserved since <strong style="color:var(--text);">1991</strong>. Every developer knows 404 (Not Found) and 401 (Unauthorized).<br>But 402 sat unused for <strong style="color:var(--accent);">35 years</strong> — a placeholder for a payment mechanism that didn't yet exist.</div>
+    <div class="insight-box" style="max-width:700px;font-size:16px;">
+      Tempo Labs + Stripe submitted draft-httpauth-payment-00 to the IETF.<br>The IETF standardized HTTP, email, and TLS. What they ratify becomes the plumbing of the global internet.
+    </div>
+  </div>
+-->
+
+  <!-- SLIDE 35: How x402 Works -->
+  <div class="slide" style="flex-direction:column; gap:20px;" data-chapter="5">
+    <div class="slide-heading" style="text-align:center;">How the Protocol Works</div>
+    <div class="flow-steps" style="max-width:820px;width:100%;">
+      <div class="flow-step"><div class="flow-num">1</div><div class="flow-text">Client sends standard HTTP GET request</div></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><div class="flow-num">2</div><div class="flow-text">Server responds: <code style="color:var(--accent2);">HTTP 402</code> + payment challenge (amount, currency, recipient)</div></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><div class="flow-num">3</div><div class="flow-text">Client fulfills payment — <em>method agnostic</em>: stablecoin, Lightning, card charge</div></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><div class="flow-num">4</div><div class="flow-text">Client resubmits with cryptographic proof of payment</div></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step"><div class="flow-num">5</div><div class="flow-text">Server verifies and responds <code style="color:var(--accent3);">200 OK</code> + resource + signed receipt</div></div>
+    </div>
+    <div class="insight-box" style="max-width:820px;">
+      No bank. No payment processor. No human. Every API call, data fetch, and AI inference can now natively carry payment.
+    </div>
+  </div>
+
+  <!-- SLIDE 36: Protocols vs Technologies -->
+  <div class="slide" style="flex-direction:column; gap:24px; text-align:center;" data-chapter="5">
+    <div class="slide-heading">Technologies Compete. Protocols <span style="color:var(--accent);">Converge.</span></div>
+    <div style="font-size:16px;color:var(--muted);max-width:750px;line-height:1.6;">In a protocol market, winner-take-all is not a possibility — it is the inevitable end state.<br>Network value grows with the <em>square</em> of participants (Metcalfe's Law).</div>
+    <div class="three-grid" style="max-width:900px;">
+      <div class="card" style="text-align:left;">
+        <div style="font-size:22px;">📡</div>
+        <div class="card-title">TCP/IP vs OSI</div>
+        <div class="card-desc">OSI was more elegant, had more backing. TCP/IP had more deployment. Adoption beats quality — first to critical mass wins.</div>
+      </div>
+      <div class="card" style="text-align:left;">
+        <div style="font-size:22px;">📼</div>
+        <div class="card-title">VHS vs Betamax</div>
+        <div class="card-desc">Betamax was technically superior. VHS achieved rental library dominance first. Inferior protocol, first to network mass, wins.</div>
+      </div>
+      <div class="card" style="text-align:left;">
+        <div style="font-size:22px;">🌐</div>
+        <div class="card-title">HTTP vs Gopher</div>
+        <div class="card-desc">1993: Gopher traffic exceeded HTTP. Minnesota announced licensing fees. CERN: HTTP royalty-free forever. Gopher dead by 1996.</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:900px;font-size:15px;">
+      Charging for protocol access taxes your own network effects. Openness accelerates adoption.
+    </div>
+  </div>
+
+  <!-- SLIDE 35: x402 Strategic Implications -->
+  <div class="slide" style="flex-direction:column; gap:20px; text-align:center;" data-chapter="5">
+    <div class="slide-heading">What x402 Means</div>
+    <div style="display:flex;gap:16px;max-width:960px;width:100%;flex-wrap:wrap;justify-content:center;">
+      <div class="card" style="flex:1;min-width:200px;text-align:left;">
+        <div style="font-size:28px;">🌍</div>
+        <div class="card-title">Universal On-Ramp</div>
+        <div class="card-desc">Every server becomes a potential paywall. Every registered payment network gains access to every internet-connected device.</div>
+      </div>
+      <div class="card" style="flex:1;min-width:200px;text-align:left;">
+        <div style="font-size:28px;">🤖</div>
+        <div class="card-title">Agents Unlock</div>
+        <div class="card-desc">AI agents with funded wallets can now pay for any HTTP-accessible resource autonomously. Theory 3 moves from plausible future to infrastructure.</div>
+      </div>
+      <div class="card" style="flex:1;min-width:200px;text-align:left;">
+        <div style="font-size:28px;">💡</div>
+        <div class="card-title">Entrepreneurial Opportunity</div>
+        <div class="card-desc">Agent wallet infrastructure. Discovery engines. Compliance bridges. The browsers, search engines, and commerce platforms of the machine payment web.</div>
+      </div>
+    </div>
+    <div class="insight-box" style="max-width:960px;font-size:16px;">
+      This is what convergence looks like from the inside — not a revolution, but engineers writing a spec together
+    </div>
+  </div>
+
+  <!-- =========================================
+       CHAPTER 7: CLOSING
+  ========================================= -->
+
+  <!-- SLIDE 36: Three Theories -->
+  <div class="slide slide-full" data-chapter="6">
+    <div class="slide-heading" style="margin-bottom:16px;">Three Theories. Three Predictions.</div>
+    <div class="theory-grid">
+      <div class="theory-box">
+        <div class="theory-num">1</div>
+        <div class="theory-content">
+          <div class="theory-title">Digital Currency Displaces Fiat</div>
+          <div class="theory-text">Blockchains form the technical basis for digital currency, and digital currencies will progressively displace fiat currencies as the dominant form of global value transfer.</div>
+        </div>
+      </div>
+      <div class="theory-box" style="border-left-color:var(--accent2);">
+        <div class="theory-num" style="color:var(--accent2);">2</div>
+        <div class="theory-content">
+          <div class="theory-title">Smart Contracts Eliminate Intermediaries</div>
+          <div class="theory-text">Cryptographically signed transactions on distributed networks are the key to permissionless global financial transactions. Stablecoins serve as the bridge between eras.</div>
+        </div>
+      </div>
+      <div class="theory-box" style="border-left-color:var(--accent3);">
+        <div class="theory-num" style="color:var(--accent3);">3</div>
+        <div class="theory-content">
+          <div class="theory-title">Agentic AI on Blockchain</div>
+          <div class="theory-text">Specialized, personalized, task-specific AI agents will transact autonomously on blockchain infrastructure. The coordination of billions of agents constitutes the backbone of a new global economy.</div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:14px;color:var(--muted);margin-top:8px;font-style:italic;">These are hypotheses derived from first principles — not facts. Apply your own reasoning.</div>
+  </div>
+
+  <!-- SLIDE 39: Framework -->
+  <div class="slide slide-full" data-chapter="6">
+    <div class="slide-heading" style="margin-bottom:16px;">The Framework to Carry Forward</div>
+    <div class="framework-list">
+      <div class="framework-item">
+        <div class="framework-icon">🔍</div>
+        <div class="framework-text"><strong>Identify trust dependencies.</strong> Every place you must rely on a counterparty is a place where blockchain may provide a trustless alternative.</div>
+      </div>
+      <div class="framework-item">
+        <div class="framework-icon">🤖</div>
+        <div class="framework-text"><strong>Ask where AI agents could replace human judgment</strong> in high-frequency, rule-governed decisions. Those are early adoption points for agentic systems.</div>
+      </div>
+      <div class="framework-item">
+        <div class="framework-icon">💰</div>
+        <div class="framework-text"><strong>Trace the money.</strong> Wherever new financial infrastructure emerges, first movers in market-making, settlement, and protocol governance capture disproportionate value.</div>
+      </div>
+      <div class="framework-item">
+        <div class="framework-icon">🧭</div>
+        <div class="framework-text"><strong>Reason from first principles, not from incumbents.</strong> The firms that will define this era are not yet the largest — and they don't look at the world through the existing system's lens.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 40: Final Provocation -->
+  <div class="slide slide-statement" data-chapter="6">
+    <div class="big-statement" style="font-size:48px;">
+      Ten years from now — which of these changes will seem <span class="highlight">obvious</span> in retrospect?
+    </div>
+    <div class="sub-statement" style="font-size:18px;">And what decisions are you positioned to make <em>now</em> that most of your peers are not yet making?</div>
+  </div>
+
+  <!-- SLIDE 41: Closing -->
+  <div class="slide slide-statement" data-chapter="6">
+    <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:24px;">
+      <div style="font-size:13px;letter-spacing:4px;color:var(--accent);text-transform:uppercase;font-weight:700;">The best way to predict the future is to invent it.</div>
+      <div class="dont-trust" style="font-size:80px;">Don't Trust<br>— Verify —</div>
+      <div style="font-size:28px;font-weight:800;color:var(--accent3);">Then go build something.</div>
+      <div style="margin-top:16px;background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:20px 32px;display:flex;flex-direction:column;gap:8px;min-width:340px;">
+        <div style="font-size:20px;font-weight:700;">Ron Welch</div>
+        <div style="font-size:13px;color:var(--muted);font-family:monospace;">rwelch@acm.org</div>
+        <div style="font-size:11px;color:var(--muted);font-family:monospace;">npub19556tdmcmeqv5c9tgge9k68f2fc0s2kmue8xwp5jf3g4kms3yrpqfcp0qv</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV ARROWS -->
+  <div id="nav-arrows">
+    <button class="arrow-btn" id="prev-btn">←</button>
+    <button class="arrow-btn" id="next-btn">→</button>
+  </div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  let currentSlide = 0;
+  let isTransitioning = false;
+
+  document.getElementById('total-num').textContent = totalSlides;
+
+  const chapters = document.querySelectorAll('.chapter-item');
+  const chapterStartSlides = Array.from(chapters).map(c => parseInt(c.dataset.slide));
+
+  function getChapterForSlide(idx) {
+    let chap = 0;
+    for (let i = 0; i < chapterStartSlides.length; i++) {
+      if (idx >= chapterStartSlides[i]) chap = i;
+    }
+    return chap;
+  }
+
+  function updateUI() {
+    document.getElementById('current-num').textContent = currentSlide + 1;
+    const pct = ((currentSlide) / (totalSlides - 1)) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+
+    // Update chapter highlight
+    const activeChap = getChapterForSlide(currentSlide);
+    chapters.forEach((c, i) => {
+      c.classList.toggle('active', i === activeChap);
+    });
+  }
+
+  function goTo(idx) {
+    if (isTransitioning || idx === currentSlide) return;
+    if (idx < 0 || idx >= totalSlides) return;
+
+    isTransitioning = true;
+    const prev = slides[currentSlide];
+    const next = slides[idx];
+
+    prev.classList.add('exit');
+    prev.classList.remove('active');
+
+    setTimeout(() => {
+      prev.classList.remove('exit');
+      next.classList.add('active');
+      currentSlide = idx;
+      updateUI();
+
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 460);
+    }, 200);
+  }
+
+  function next() { goTo(currentSlide + 1); }
+  function prev() { goTo(currentSlide - 1); }
+
+  document.getElementById('next-btn').addEventListener('click', next);
+  document.getElementById('prev-btn').addEventListener('click', prev);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+  });
+
+  chapters.forEach((c) => {
+    c.addEventListener('click', () => {
+      const targetSlide = parseInt(c.dataset.slide);
+      goTo(targetSlide);
+    });
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.getElementById('main').addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+  document.getElementById('main').addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (dx < -50) next();
+    if (dx > 50) prev();
+  });
+
+  updateUI();
+</script>
+</body>
+</html>
+```
